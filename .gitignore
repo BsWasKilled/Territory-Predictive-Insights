@@ -1,0 +1,19 @@
+# Build do Maven
+target/
+
+# Banco H2 e arquivos exportados, criados ao rodar o programa
+dados/
+exportacoes/
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+bin/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

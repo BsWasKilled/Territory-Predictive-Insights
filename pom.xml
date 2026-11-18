@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>br.com.fiap.gs</groupId>
+    <artifactId>territory-predictive-insights-fev</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>Territory Predictive Insights</name>
+    <description>Global Solution 2/2026 - POO: monitoramento territorial de chuva e risco de alagamento</description>
+
+    <properties>
+        <!-- Java 17 ou superior. O codigo-fonte e gravado em UTF-8 (acentos). -->
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Classe com o metodo main (menu principal) -->
+        <classe.principal>SistemaMonitoramento</classe.principal>
+
+        <!-- Bibliotecas -->
+        <h2.version>2.2.220</h2.version>
+        <junit.version>5.10.1</junit.version>
+        <mockito.version>5.23.0</mockito.version>
+
+        <!-- Plugins do Maven (versoes fixas para a build ser sempre a mesma) -->
+        <plugin.clean.version>3.2.0</plugin.clean.version>
+        <plugin.resources.version>3.3.0</plugin.resources.version>
+        <plugin.compiler.version>3.10.1</plugin.compiler.version>
+        <plugin.surefire.version>3.2.5</plugin.surefire.version>
+        <plugin.jar.version>3.3.0</plugin.jar.version>
+        <plugin.shade.version>3.4.1</plugin.shade.version>
+        <plugin.exec.version>3.1.0</plugin.exec.version>
+    </properties>
+
+    <dependencies>
+        <!-- Banco de dados H2 embarcado: so e necessario na execucao (driver JDBC) -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Testes unitarios -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>${plugin.clean.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${plugin.resources.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${plugin.compiler.version}</version>
+            </plugin>
+
+            <!-- Roda os testes JUnit 5 em "mvn test" -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${plugin.surefire.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${plugin.jar.version}</version>
+            </plugin>
+
+            <!-- Gera um unico .jar executavel, ja com o H2 dentro: java -jar target/territory-predictive-insights-fev.jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>${plugin.shade.version}</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>${classe.principal}</mainClass>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/MANIFEST.MF</exclude>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Atalho para rodar sem gerar o jar: mvn compile exec:java -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${plugin.exec.version}</version>
+                <configuration>
+                    <mainClass>${classe.principal}</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
